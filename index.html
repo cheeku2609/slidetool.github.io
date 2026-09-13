@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Instagram 4:5 Slide Maker</title>
+<title>PMRC Social Media Tool</title>
 <style>
   :root{
     --bg:#0f1115;
@@ -24,24 +24,16 @@
     align-items:center;
     gap:20px;
   }
-  h1{
-    font-size:20px;
-    font-weight:600;
-    margin:0;
-  }
-  .sub{
-    color:var(--muted);
-    font-size:13px;
-    margin-top:-12px;
-    text-align:center;
-  }
+  h1{ font-size:20px; font-weight:600; margin:0; }
+  .sub{ color:var(--muted); font-size:13px; margin-top:-12px; text-align:center; max-width:500px; }
   .layout{
     display:flex;
     gap:24px;
     flex-wrap:wrap;
     justify-content:center;
     width:100%;
-    max-width:1000px;
+    max-width:1040px;
+    align-items:flex-start;
   }
   .controls{
     background:var(--panel);
@@ -51,18 +43,23 @@
     width:300px;
     display:flex;
     flex-direction:column;
-    gap:16px;
+    gap:14px;
+  }
+  .global-block{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--border);
   }
   .slot{
     display:flex;
     flex-direction:column;
-    gap:8px;
+    gap:6px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--border);
   }
-  .slot label{
-    font-size:13px;
-    font-weight:600;
-    color:var(--muted);
-  }
+  .slot label{ font-size:13px; font-weight:600; color:var(--muted); }
   .dropzone{
     border:1.5px dashed var(--border);
     border-radius:10px;
@@ -75,169 +72,103 @@
     position:relative;
     overflow:hidden;
   }
-  .dropzone:hover{
-    border-color:var(--accent);
-    color:var(--text);
-  }
-  .dropzone.filled{
-    border-style:solid;
-    border-color:var(--accent);
-    padding:0;
-  }
-  .dropzone img.thumb{
-    width:100%;
-    height:70px;
-    object-fit:cover;
-    display:block;
-  }
-  .dropzone input{
-    position:absolute;
-    inset:0;
-    opacity:0;
-    cursor:pointer;
-  }
-  .zoom-row{
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-  .zoom-row span{
-    font-size:11px;
-    color:var(--muted);
-    width:34px;
-  }
-  input[type="range"]{
-    flex:1;
-    accent-color:var(--accent);
-  }
+  .dropzone:hover{ border-color:var(--accent); color:var(--text); }
+  .dropzone.filled{ border-style:solid; border-color:var(--accent); padding:0; }
+  .dropzone img.thumb{ width:100%; height:60px; object-fit:cover; display:block; }
+  .dropzone input{ position:absolute; inset:0; opacity:0; cursor:pointer; }
+  .row{ display:flex; align-items:center; gap:8px; }
+  .row span{ font-size:11px; color:var(--muted); width:56px; flex-shrink:0; }
+  input[type="range"]{ flex:1; accent-color:var(--accent); }
   select, button{
-    font-family:inherit;
-    font-size:13px;
-    border-radius:8px;
-    border:1px solid var(--border);
-    background:#20242c;
-    color:var(--text);
-    padding:9px 10px;
+    font-family:inherit; font-size:13px; border-radius:8px;
+    border:1px solid var(--border); background:#20242c; color:var(--text); padding:9px 10px;
   }
-  select{width:100%;}
-  button{
-    cursor:pointer;
-    font-weight:600;
-    transition:background .15s;
-  }
-  #downloadBtn{
-    background:var(--accent);
-    border:none;
-    color:white;
-    padding:12px;
-    font-size:14px;
-  }
-  #downloadBtn:disabled{
-    background:#333844;
-    color:var(--muted);
-    cursor:not-allowed;
-  }
-  #downloadBtn:not(:disabled):hover{
-    background:#4877d6;
-  }
-  .field-label{
-    font-size:12px;
-    color:var(--muted);
-    font-weight:600;
-  }
+  select{ width:100%; }
+  button{ cursor:pointer; font-weight:600; transition:background .15s; }
+  .btn-row{ display:flex; gap:6px; }
+  .btn-row button{ flex:1; font-size:12px; padding:7px; }
+  #downloadBtn{ background:var(--accent); border:none; color:white; padding:12px; font-size:14px; }
+  #downloadBtn:disabled{ background:#333844; color:var(--muted); cursor:not-allowed; }
+  #downloadBtn:not(:disabled):hover{ background:#4877d6; }
+  .field-label{ font-size:12px; color:var(--muted); font-weight:600; }
   .canvas-wrap{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:12px;
-    padding:16px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:10px;
+    background:var(--panel); border:1px solid var(--border); border-radius:12px;
+    padding:16px; display:flex; flex-direction:column; align-items:center; gap:10px;
   }
   #canvas{
-    max-width:380px;
-    width:100%;
-    height:auto;
-    border-radius:6px;
-    display:block;
-    background:#000;
-    touch-action:none;
-    cursor:grab;
+    max-width:380px; width:100%; height:auto; border-radius:6px; display:block;
+    background:#000; touch-action:none; cursor:grab;
   }
   #canvas.dragging{ cursor:grabbing; }
-  .hint{
-    font-size:11px;
-    color:var(--muted);
-    text-align:center;
-  }
-  .swap{
-    align-self:flex-start;
-    background:none;
-    border:none;
-    color:var(--accent);
-    font-size:12px;
-    padding:0;
-    text-decoration:underline;
-  }
-  .reset-link{
-    font-size:11px;
-    color:var(--accent);
-    text-decoration:underline;
-    cursor:pointer;
-    background:none;
-    border:none;
-    padding:0;
-    align-self:flex-end;
-  }
+  .hint{ font-size:11px; color:var(--muted); text-align:center; }
+  .swap{ background:none; border:none; color:var(--accent); font-size:12px; padding:0; text-decoration:underline; align-self:flex-start; }
+  .reset-link{ font-size:11px; color:var(--accent); text-decoration:underline; cursor:pointer; background:none; border:none; padding:0; align-self:flex-end; }
 </style>
 </head>
 <body>
 
-<h1>Instagram 4:5 Slide Maker</h1>
-<div class="sub">Pick two photos, drag to reposition and use the zoom slider to adjust each crop</div>
+<h1>PMRC Social Media Tool</h1>
+<div class="sub">Pick two photos. Drag to reposition, zoom, rotate, flip, and adjust brightness — all before export.</div>
 
 <div class="layout">
   <div class="controls">
-    <div class="slot">
-      <label>Top image</label>
-      <div class="dropzone" id="drop1">
-        <span id="drop1-text">Click or drop image</span>
-        <input type="file" id="file1" accept="image/*">
-      </div>
-      <div class="zoom-row">
-        <span>Zoom</span>
-        <input type="range" id="zoom1" min="1" max="3" step="0.01" value="1" disabled>
-      </div>
-      <button class="reset-link" id="reset1">Reset position</button>
-    </div>
 
-    <div class="slot">
-      <label>Bottom image</label>
-      <div class="dropzone" id="drop2">
-        <span id="drop2-text">Click or drop image</span>
-        <input type="file" id="file2" accept="image/*">
-      </div>
-      <div class="zoom-row">
-        <span>Zoom</span>
-        <input type="range" id="zoom2" min="1" max="3" step="0.01" value="1" disabled>
-      </div>
-      <button class="reset-link" id="reset2">Reset position</button>
-    </div>
+    <div class="global-block">
+      <span class="field-label">Output size</span>
+      <select id="aspectSelect">
+        <option value="4:5" selected>4:5 — Instagram Portrait (1080×1350)</option>
+        <option value="1:1">1:1 — Square (1080×1080)</option>
+        <option value="9:16">9:16 — Story/Reel (1080×1920)</option>
+      </select>
 
-    <button class="swap" id="swapBtn">↕ Swap order</button>
-
-    <div class="slot">
       <span class="field-label">Divider</span>
       <select id="dividerStyle">
         <option value="none">No gap (seamless)</option>
         <option value="thin" selected>Thin white line</option>
         <option value="thick">Thick white gap</option>
       </select>
+
+      <div class="row">
+        <span>Split</span>
+        <input type="range" id="splitRatio" min="20" max="80" step="1" value="50">
+      </div>
+      <button class="swap" id="swapBtn">↕ Swap top / bottom</button>
+    </div>
+
+    <div class="slot">
+      <label>Top image</label>
+      <div class="dropzone" id="drop1">
+        <span id="drop1-text">Click or drop image</span>
+        <input type="file" id="file1" accept="image/*">
+      </div>
+      <div class="row"><span>Zoom</span><input type="range" id="zoom1" min="1" max="3" step="0.01" value="1" disabled></div>
+      <div class="row"><span>Brightness</span><input type="range" id="bright1" min="50" max="150" step="1" value="100" disabled></div>
+      <div class="row"><span>Contrast</span><input type="range" id="contrast1" min="50" max="150" step="1" value="100" disabled></div>
+      <div class="btn-row">
+        <button id="rotate1">⟳ Rotate</button>
+        <button id="flip1">⇋ Flip</button>
+        <button class="reset-link" id="reset1" style="flex:none;">Reset</button>
+      </div>
+    </div>
+
+    <div class="slot" style="border-bottom:none; padding-bottom:0;">
+      <label>Bottom image</label>
+      <div class="dropzone" id="drop2">
+        <span id="drop2-text">Click or drop image</span>
+        <input type="file" id="file2" accept="image/*">
+      </div>
+      <div class="row"><span>Zoom</span><input type="range" id="zoom2" min="1" max="3" step="0.01" value="1" disabled></div>
+      <div class="row"><span>Brightness</span><input type="range" id="bright2" min="50" max="150" step="1" value="100" disabled></div>
+      <div class="row"><span>Contrast</span><input type="range" id="contrast2" min="50" max="150" step="1" value="100" disabled></div>
+      <div class="btn-row">
+        <button id="rotate2">⟳ Rotate</button>
+        <button id="flip2">⇋ Flip</button>
+        <button class="reset-link" id="reset2" style="flex:none;">Reset</button>
+      </div>
     </div>
 
     <button id="downloadBtn" disabled>Download PNG</button>
-    <div class="hint">Output: 1080×1350px (4:5) — perfect for Instagram feed posts</div>
+    <div class="hint" id="sizeHint">Output: 1080×1350px (4:5)</div>
   </div>
 
   <div class="canvas-wrap">
@@ -247,14 +178,13 @@
 </div>
 
 <script>
-const CW = 1080, CH = 1350;
+let CW = 1080, CH = 1350;
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-// state per slot: img, zoom, dx, dy (dx/dy = top-left offset of scaled image relative to its box, in box px)
 const slots = {
-  1: { img: null, zoom: 1, dx: 0, dy: 0 },
-  2: { img: null, zoom: 1, dx: 0, dy: 0 }
+  1: { img: null, zoom: 1, dx: 0, dy: 0, brightness: 100, contrast: 100 },
+  2: { img: null, zoom: 1, dx: 0, dy: 0, brightness: 100, contrast: 100 }
 };
 
 const drop1 = document.getElementById('drop1');
@@ -263,11 +193,14 @@ const file1 = document.getElementById('file1');
 const file2 = document.getElementById('file2');
 const downloadBtn = document.getElementById('downloadBtn');
 const dividerStyle = document.getElementById('dividerStyle');
+const aspectSelect = document.getElementById('aspectSelect');
+const splitRatio = document.getElementById('splitRatio');
 const swapBtn = document.getElementById('swapBtn');
-const zoom1 = document.getElementById('zoom1');
-const zoom2 = document.getElementById('zoom2');
-const reset1 = document.getElementById('reset1');
-const reset2 = document.getElementById('reset2');
+const sizeHint = document.getElementById('sizeHint');
+
+const zoomEls = { 1: document.getElementById('zoom1'), 2: document.getElementById('zoom2') };
+const brightEls = { 1: document.getElementById('bright1'), 2: document.getElementById('bright2') };
+const contrastEls = { 1: document.getElementById('contrast1'), 2: document.getElementById('contrast2') };
 
 function getGap(){
   const style = dividerStyle.value;
@@ -276,9 +209,14 @@ function getGap(){
 
 function getBox(slotNum){
   const gap = getGap();
-  const halfH = (CH - gap) / 2;
-  const y = slotNum === 1 ? 0 : halfH + gap;
-  return { x: 0, y: y, w: CW, h: halfH };
+  const ratio = parseInt(splitRatio.value) / 100;
+  const topH = (CH - gap) * ratio;
+  const bottomH = (CH - gap) - topH;
+  if(slotNum === 1){
+    return { x:0, y:0, w:CW, h:topH };
+  } else {
+    return { x:0, y: topH + gap, w:CW, h: bottomH };
+  }
 }
 
 function coverScale(img, box){
@@ -293,8 +231,8 @@ function clampSlot(slotNum){
   const totalScale = base * s.zoom;
   const dispW = s.img.width * totalScale;
   const dispH = s.img.height * totalScale;
-  const minDx = box.w - dispW; // <= 0
-  const minDy = box.h - dispH; // <= 0
+  const minDx = box.w - dispW;
+  const minDy = box.h - dispH;
   s.dx = Math.min(0, Math.max(minDx, s.dx));
   s.dy = Math.min(0, Math.max(minDy, s.dy));
 }
@@ -323,15 +261,46 @@ function loadImage(file){
   });
 }
 
-function setupSlot(dropEl, fileInput, slotNum, zoomEl){
+// bake a rotation/flip transform into a new image so drag/zoom logic stays simple
+function transformImage(img, rotateBy, flip){
+  return new Promise((resolve) => {
+    const tmp = document.createElement('canvas');
+    const tctx = tmp.getContext('2d');
+    const swap = (rotateBy === 90 || rotateBy === 270);
+    tmp.width = swap ? img.height : img.width;
+    tmp.height = swap ? img.width : img.height;
+    tctx.save();
+    tctx.translate(tmp.width/2, tmp.height/2);
+    tctx.rotate(rotateBy * Math.PI/180);
+    if(flip) tctx.scale(-1,1);
+    tctx.drawImage(img, -img.width/2, -img.height/2);
+    tctx.restore();
+    const out = new Image();
+    out.onload = () => resolve(out);
+    out.src = tmp.toDataURL('image/png');
+  });
+}
+
+function refreshControlsEnabled(slotNum){
+  const has = !!slots[slotNum].img;
+  zoomEls[slotNum].disabled = !has;
+  brightEls[slotNum].disabled = !has;
+  contrastEls[slotNum].disabled = !has;
+}
+
+function setupSlot(dropEl, fileInput, slotNum){
   fileInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if(!file) return;
     const im = await loadImage(file);
     slots[slotNum].img = im;
     slots[slotNum].zoom = 1;
-    zoomEl.value = 1;
-    zoomEl.disabled = false;
+    slots[slotNum].brightness = 100;
+    slots[slotNum].contrast = 100;
+    zoomEls[slotNum].value = 1;
+    brightEls[slotNum].value = 100;
+    contrastEls[slotNum].value = 100;
+    refreshControlsEnabled(slotNum);
     centerSlot(slotNum);
 
     dropEl.classList.add('filled');
@@ -357,46 +326,83 @@ function setupSlot(dropEl, fileInput, slotNum, zoomEl){
   });
 }
 
-setupSlot(drop1, file1, 1, zoom1);
-setupSlot(drop2, file2, 2, zoom2);
+setupSlot(drop1, file1, 1);
+setupSlot(drop2, file2, 2);
 
-zoom1.addEventListener('input', () => {
-  slots[1].zoom = parseFloat(zoom1.value);
-  clampSlot(1);
-  render();
-});
-zoom2.addEventListener('input', () => {
-  slots[2].zoom = parseFloat(zoom2.value);
-  clampSlot(2);
-  render();
+[1,2].forEach(n => {
+  zoomEls[n].addEventListener('input', () => {
+    slots[n].zoom = parseFloat(zoomEls[n].value);
+    clampSlot(n);
+    render();
+  });
+  brightEls[n].addEventListener('input', () => {
+    slots[n].brightness = parseInt(brightEls[n].value);
+    render();
+  });
+  contrastEls[n].addEventListener('input', () => {
+    slots[n].contrast = parseInt(contrastEls[n].value);
+    render();
+  });
 });
 
-reset1.addEventListener('click', () => {
-  slots[1].zoom = 1;
-  zoom1.value = 1;
+document.getElementById('reset1').addEventListener('click', () => resetSlot(1));
+document.getElementById('reset2').addEventListener('click', () => resetSlot(2));
+function resetSlot(n){
+  slots[n].zoom = 1;
+  slots[n].brightness = 100;
+  slots[n].contrast = 100;
+  zoomEls[n].value = 1;
+  brightEls[n].value = 100;
+  contrastEls[n].value = 100;
+  centerSlot(n);
+  render();
+}
+
+document.getElementById('rotate1').addEventListener('click', () => rotateSlot(1));
+document.getElementById('rotate2').addEventListener('click', () => rotateSlot(2));
+async function rotateSlot(n){
+  const s = slots[n];
+  if(!s.img) return;
+  s.img = await transformImage(s.img, 90, false);
+  s.zoom = 1;
+  zoomEls[n].value = 1;
+  centerSlot(n);
+  render();
+}
+
+document.getElementById('flip1').addEventListener('click', () => flipSlot(1));
+document.getElementById('flip2').addEventListener('click', () => flipSlot(2));
+async function flipSlot(n){
+  const s = slots[n];
+  if(!s.img) return;
+  s.img = await transformImage(s.img, 0, true);
+  render();
+}
+
+function updateAspect(){
+  const val = aspectSelect.value;
+  if(val === '4:5'){ CW = 1080; CH = 1350; }
+  else if(val === '1:1'){ CW = 1080; CH = 1080; }
+  else if(val === '9:16'){ CW = 1080; CH = 1920; }
+  canvas.width = CW;
+  canvas.height = CH;
+  sizeHint.textContent = 'Output: ' + CW + '×' + CH + 'px (' + val + ')';
   centerSlot(1);
-  render();
-});
-reset2.addEventListener('click', () => {
-  slots[2].zoom = 1;
-  zoom2.value = 1;
   centerSlot(2);
   render();
-});
+}
+aspectSelect.addEventListener('change', updateAspect);
 
-dividerStyle.addEventListener('change', () => {
-  centerSlot(1);
-  centerSlot(2);
-  render();
-});
+dividerStyle.addEventListener('change', () => { centerSlot(1); centerSlot(2); render(); });
+splitRatio.addEventListener('input', () => { centerSlot(1); centerSlot(2); render(); });
 
 swapBtn.addEventListener('click', () => {
   const tmp = slots[1];
   slots[1] = slots[2];
   slots[2] = tmp;
 
-  function refreshThumb(dropEl, fileInput, slotNum, zoomEl){
-    const s = slots[slotNum];
+  function refreshThumb(dropEl, fileInput, n){
+    const s = slots[n];
     dropEl.classList.toggle('filled', !!s.img);
     dropEl.innerHTML = '';
     if(s.img){
@@ -404,21 +410,20 @@ swapBtn.addEventListener('click', () => {
       thumb.className = 'thumb';
       thumb.src = s.img.src;
       dropEl.appendChild(thumb);
-      zoomEl.disabled = false;
-      zoomEl.value = s.zoom;
     } else {
       const span = document.createElement('span');
       span.textContent = 'Click or drop image';
       dropEl.appendChild(span);
-      zoomEl.disabled = true;
-      zoomEl.value = 1;
     }
     dropEl.appendChild(fileInput);
+    refreshControlsEnabled(n);
+    zoomEls[n].value = s.zoom;
+    brightEls[n].value = s.brightness;
+    contrastEls[n].value = s.contrast;
   }
 
-  refreshThumb(drop1, file1, 1, zoom1);
-  refreshThumb(drop2, file2, 2, zoom2);
-
+  refreshThumb(drop1, file1, 1);
+  refreshThumb(drop2, file2, 2);
   render();
 });
 
@@ -431,6 +436,7 @@ function drawSlot(slotNum){
   ctx.beginPath();
   ctx.rect(box.x, box.y, box.w, box.h);
   ctx.clip();
+  ctx.filter = 'brightness(' + s.brightness + '%) contrast(' + s.contrast + '%)';
 
   const base = coverScale(s.img, box);
   const totalScale = base * s.zoom;
@@ -442,6 +448,7 @@ function drawSlot(slotNum){
 }
 
 function render(){
+  ctx.filter = 'none';
   ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, CW, CH);
 
@@ -451,6 +458,7 @@ function render(){
   const gap = getGap();
   if(gap > 0 && (slots[1].img || slots[2].img)){
     const box1 = getBox(1);
+    ctx.filter = 'none';
     ctx.fillStyle = '#fff';
     ctx.fillRect(0, box1.h, CW, gap);
   }
@@ -459,7 +467,7 @@ function render(){
 }
 
 // ---- Drag to reposition ----
-let dragging = null; // slotNum currently being dragged
+let dragging = null;
 let dragStart = { x: 0, y: 0 };
 let dragOrigin = { dx: 0, dy: 0 };
 
@@ -469,10 +477,7 @@ function canvasCoords(evt){
   const scaleY = CH / rect.height;
   const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
   const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
-  return {
-    x: (clientX - rect.left) * scaleX,
-    y: (clientY - rect.top) * scaleY
-  };
+  return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
 }
 
 function slotAt(y){
@@ -488,10 +493,10 @@ canvas.addEventListener('pointerdown', (e) => {
   dragStart = pos;
   dragOrigin = { dx: slots[slotNum].dx, dy: slots[slotNum].dy };
   canvas.classList.add('dragging');
-  canvas.setPointerCapture(e.pointerId);
+  e.preventDefault();
 });
 
-canvas.addEventListener('pointermove', (e) => {
+function onMove(e){
   if(dragging === null) return;
   const pos = canvasCoords(e);
   const s = slots[dragging];
@@ -499,15 +504,16 @@ canvas.addEventListener('pointermove', (e) => {
   s.dy = dragOrigin.dy + (pos.y - dragStart.y);
   clampSlot(dragging);
   render();
-});
-
-function endDrag(){
-  dragging = null;
-  canvas.classList.remove('dragging');
+  e.preventDefault();
 }
-canvas.addEventListener('pointerup', endDrag);
-canvas.addEventListener('pointerleave', endDrag);
-canvas.addEventListener('pointercancel', endDrag);
+
+function endDrag(){ dragging = null; canvas.classList.remove('dragging'); }
+
+// Listen on the document (not just the canvas) so a fast or edge-hugging
+// drag never "escapes" the small preview and gets dropped.
+document.addEventListener('pointermove', onMove, { passive:false });
+document.addEventListener('pointerup', endDrag);
+document.addEventListener('pointercancel', endDrag);
 
 downloadBtn.addEventListener('click', () => {
   const link = document.createElement('a');
