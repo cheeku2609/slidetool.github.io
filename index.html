@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Instagram 4:5 Slide Maker</title>
+<style>
+  :root{
+    --bg:#0f1115;
+    --panel:#1a1d24;
+    --accent:#5b8def;
+    --text:#e8eaed;
+    --muted:#9aa0aa;
+    --border:#2a2e37;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    padding:24px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+  }
+  h1{
+    font-size:20px;
+    font-weight:600;
+    margin:0;
+  }
+  .sub{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:-12px;
+    text-align:center;
+  }
+  .layout{
+    display:flex;
+    gap:24px;
+    flex-wrap:wrap;
+    justify-content:center;
+    width:100%;
+    max-width:1000px;
+  }
+  .controls{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:20px;
+    width:300px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  .slot{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .slot label{
+    font-size:13px;
+    font-weight:600;
+    color:var(--muted);
+  }
+  .dropzone{
+    border:1.5px dashed var(--border);
+    border-radius:10px;
+    padding:14px;
+    text-align:center;
+    font-size:12px;
+    color:var(--muted);
+    cursor:pointer;
+    transition:border-color .15s, color .15s;
+    position:relative;
+    overflow:hidden;
+  }
+  .dropzone:hover{
+    border-color:var(--accent);
+    color:var(--text);
+  }
+  .dropzone.filled{
+    border-style:solid;
+    border-color:var(--accent);
+    padding:0;
+  }
+  .dropzone img.thumb{
+    width:100%;
+    height:70px;
+    object-fit:cover;
+    display:block;
+  }
+  .dropzone input{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    cursor:pointer;
+  }
+  .zoom-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .zoom-row span{
+    font-size:11px;
+    color:var(--muted);
+    width:34px;
+  }
+  input[type="range"]{
+    flex:1;
+    accent-color:var(--accent);
+  }
+  select, button{
+    font-family:inherit;
+    font-size:13px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    background:#20242c;
+    color:var(--text);
+    padding:9px 10px;
+  }
+  select{width:100%;}
+  button{
+    cursor:pointer;
+    font-weight:600;
+    transition:background .15s;
+  }
+  #downloadBtn{
+    background:var(--accent);
+    border:none;
+    color:white;
+    padding:12px;
+    font-size:14px;
+  }
+  #downloadBtn:disabled{
+    background:#333844;
+    color:var(--muted);
+    cursor:not-allowed;
+  }
+  #downloadBtn:not(:disabled):hover{
+    background:#4877d6;
+  }
+  .field-label{
+    font-size:12px;
+    color:var(--muted);
+    font-weight:600;
+  }
+  .canvas-wrap{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+  }
+  #canvas{
+    max-width:380px;
+    width:100%;
+    height:auto;
+    border-radius:6px;
+    display:block;
+    background:#000;
+    touch-action:none;
+    cursor:grab;
+  }
+  #canvas.dragging{ cursor:grabbing; }
+  .hint{
+    font-size:11px;
+    color:var(--muted);
+    text-align:center;
+  }
+  .swap{
+    align-self:flex-start;
+    background:none;
+    border:none;
+    color:var(--accent);
+    font-size:12px;
+    padding:0;
+    text-decoration:underline;
+  }
+  .reset-link{
+    font-size:11px;
+    color:var(--accent);
+    text-decoration:underline;
+    cursor:pointer;
+    background:none;
+    border:none;
+    padding:0;
+    align-self:flex-end;
+  }
+</style>
+</head>
+<body>
+
+<h1>Instagram 4:5 Slide Maker</h1>
+<div class="sub">Pick two photos, drag to reposition and use the zoom slider to adjust each crop</div>
+
+<div class="layout">
+  <div class="controls">
+    <div class="slot">
+      <label>Top image</label>
+      <div class="dropzone" id="drop1">
+        <span id="drop1-text">Click or drop image</span>
+        <input type="file" id="file1" accept="image/*">
+      </div>
+      <div class="zoom-row">
+        <span>Zoom</span>
+        <input type="range" id="zoom1" min="1" max="3" step="0.01" value="1" disabled>
+      </div>
+      <button class="reset-link" id="reset1">Reset position</button>
+    </div>
+
+    <div class="slot">
+      <label>Bottom image</label>
+      <div class="dropzone" id="drop2">
+        <span id="drop2-text">Click or drop image</span>
+        <input type="file" id="file2" accept="image/*">
+      </div>
+      <div class="zoom-row">
+        <span>Zoom</span>
+        <input type="range" id="zoom2" min="1" max="3" step="0.01" value="1" disabled>
+      </div>
+      <button class="reset-link" id="reset2">Reset position</button>
+    </div>
+
+    <button class="swap" id="swapBtn">↕ Swap order</button>
+
+    <div class="slot">
+      <span class="field-label">Divider</span>
+      <select id="dividerStyle">
+        <option value="none">No gap (seamless)</option>
+        <option value="thin" selected>Thin white line</option>
+        <option value="thick">Thick white gap</option>
+      </select>
+    </div>
+
+    <button id="downloadBtn" disabled>Download PNG</button>
+    <div class="hint">Output: 1080×1350px (4:5) — perfect for Instagram feed posts</div>
+  </div>
+
+  <div class="canvas-wrap">
+    <canvas id="canvas" width="1080" height="1350"></canvas>
+    <div class="hint">Drag directly on a photo to reposition it within its half</div>
+  </div>
+</div>
+
+<script>
+const CW = 1080, CH = 1350;
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+// state per slot: img, zoom, dx, dy (dx/dy = top-left offset of scaled image relative to its box, in box px)
+const slots = {
+  1: { img: null, zoom: 1, dx: 0, dy: 0 },
+  2: { img: null, zoom: 1, dx: 0, dy: 0 }
+};
+
+const drop1 = document.getElementById('drop1');
+const drop2 = document.getElementById('drop2');
+const file1 = document.getElementById('file1');
+const file2 = document.getElementById('file2');
+const downloadBtn = document.getElementById('downloadBtn');
+const dividerStyle = document.getElementById('dividerStyle');
+const swapBtn = document.getElementById('swapBtn');
+const zoom1 = document.getElementById('zoom1');
+const zoom2 = document.getElementById('zoom2');
+const reset1 = document.getElementById('reset1');
+const reset2 = document.getElementById('reset2');
+
+function getGap(){
+  const style = dividerStyle.value;
+  return style === 'none' ? 0 : (style === 'thin' ? 6 : 24);
+}
+
+function getBox(slotNum){
+  const gap = getGap();
+  const halfH = (CH - gap) / 2;
+  const y = slotNum === 1 ? 0 : halfH + gap;
+  return { x: 0, y: y, w: CW, h: halfH };
+}
+
+function coverScale(img, box){
+  return Math.max(box.w / img.width, box.h / img.height);
+}
+
+function clampSlot(slotNum){
+  const s = slots[slotNum];
+  if(!s.img) return;
+  const box = getBox(slotNum);
+  const base = coverScale(s.img, box);
+  const totalScale = base * s.zoom;
+  const dispW = s.img.width * totalScale;
+  const dispH = s.img.height * totalScale;
+  const minDx = box.w - dispW; // <= 0
+  const minDy = box.h - dispH; // <= 0
+  s.dx = Math.min(0, Math.max(minDx, s.dx));
+  s.dy = Math.min(0, Math.max(minDy, s.dy));
+}
+
+function centerSlot(slotNum){
+  const s = slots[slotNum];
+  if(!s.img) return;
+  const box = getBox(slotNum);
+  const base = coverScale(s.img, box);
+  const totalScale = base * s.zoom;
+  const dispW = s.img.width * totalScale;
+  const dispH = s.img.height * totalScale;
+  s.dx = (box.w - dispW) / 2;
+  s.dy = (box.h - dispH) / 2;
+}
+
+function loadImage(file){
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const im = new Image();
+      im.onload = () => resolve(im);
+      im.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function setupSlot(dropEl, fileInput, slotNum, zoomEl){
+  fileInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const im = await loadImage(file);
+    slots[slotNum].img = im;
+    slots[slotNum].zoom = 1;
+    zoomEl.value = 1;
+    zoomEl.disabled = false;
+    centerSlot(slotNum);
+
+    dropEl.classList.add('filled');
+    dropEl.innerHTML = '';
+    const thumb = document.createElement('img');
+    thumb.className = 'thumb';
+    thumb.src = im.src;
+    dropEl.appendChild(thumb);
+    dropEl.appendChild(fileInput);
+
+    render();
+  });
+
+  ['dragover','dragenter'].forEach(evt => {
+    dropEl.addEventListener(evt, (e) => { e.preventDefault(); dropEl.style.borderColor = 'var(--accent)'; });
+  });
+  dropEl.addEventListener('drop', (e) => {
+    e.preventDefault();
+    if(e.dataTransfer.files && e.dataTransfer.files[0]){
+      fileInput.files = e.dataTransfer.files;
+      fileInput.dispatchEvent(new Event('change'));
+    }
+  });
+}
+
+setupSlot(drop1, file1, 1, zoom1);
+setupSlot(drop2, file2, 2, zoom2);
+
+zoom1.addEventListener('input', () => {
+  slots[1].zoom = parseFloat(zoom1.value);
+  clampSlot(1);
+  render();
+});
+zoom2.addEventListener('input', () => {
+  slots[2].zoom = parseFloat(zoom2.value);
+  clampSlot(2);
+  render();
+});
+
+reset1.addEventListener('click', () => {
+  slots[1].zoom = 1;
+  zoom1.value = 1;
+  centerSlot(1);
+  render();
+});
+reset2.addEventListener('click', () => {
+  slots[2].zoom = 1;
+  zoom2.value = 1;
+  centerSlot(2);
+  render();
+});
+
+dividerStyle.addEventListener('change', () => {
+  centerSlot(1);
+  centerSlot(2);
+  render();
+});
+
+swapBtn.addEventListener('click', () => {
+  const tmp = slots[1];
+  slots[1] = slots[2];
+  slots[2] = tmp;
+
+  function refreshThumb(dropEl, fileInput, slotNum, zoomEl){
+    const s = slots[slotNum];
+    dropEl.classList.toggle('filled', !!s.img);
+    dropEl.innerHTML = '';
+    if(s.img){
+      const thumb = document.createElement('img');
+      thumb.className = 'thumb';
+      thumb.src = s.img.src;
+      dropEl.appendChild(thumb);
+      zoomEl.disabled = false;
+      zoomEl.value = s.zoom;
+    } else {
+      const span = document.createElement('span');
+      span.textContent = 'Click or drop image';
+      dropEl.appendChild(span);
+      zoomEl.disabled = true;
+      zoomEl.value = 1;
+    }
+    dropEl.appendChild(fileInput);
+  }
+
+  refreshThumb(drop1, file1, 1, zoom1);
+  refreshThumb(drop2, file2, 2, zoom2);
+
+  render();
+});
+
+function drawSlot(slotNum){
+  const s = slots[slotNum];
+  const box = getBox(slotNum);
+  if(!s.img) return;
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(box.x, box.y, box.w, box.h);
+  ctx.clip();
+
+  const base = coverScale(s.img, box);
+  const totalScale = base * s.zoom;
+  const dispW = s.img.width * totalScale;
+  const dispH = s.img.height * totalScale;
+
+  ctx.drawImage(s.img, box.x + s.dx, box.y + s.dy, dispW, dispH);
+  ctx.restore();
+}
+
+function render(){
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, CW, CH);
+
+  drawSlot(1);
+  drawSlot(2);
+
+  const gap = getGap();
+  if(gap > 0 && (slots[1].img || slots[2].img)){
+    const box1 = getBox(1);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, box1.h, CW, gap);
+  }
+
+  downloadBtn.disabled = !(slots[1].img && slots[2].img);
+}
+
+// ---- Drag to reposition ----
+let dragging = null; // slotNum currently being dragged
+let dragStart = { x: 0, y: 0 };
+let dragOrigin = { dx: 0, dy: 0 };
+
+function canvasCoords(evt){
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = CW / rect.width;
+  const scaleY = CH / rect.height;
+  const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+  const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+  return {
+    x: (clientX - rect.left) * scaleX,
+    y: (clientY - rect.top) * scaleY
+  };
+}
+
+function slotAt(y){
+  const box1 = getBox(1);
+  return y <= box1.h ? 1 : 2;
+}
+
+canvas.addEventListener('pointerdown', (e) => {
+  const pos = canvasCoords(e);
+  const slotNum = slotAt(pos.y);
+  if(!slots[slotNum].img) return;
+  dragging = slotNum;
+  dragStart = pos;
+  dragOrigin = { dx: slots[slotNum].dx, dy: slots[slotNum].dy };
+  canvas.classList.add('dragging');
+  canvas.setPointerCapture(e.pointerId);
+});
+
+canvas.addEventListener('pointermove', (e) => {
+  if(dragging === null) return;
+  const pos = canvasCoords(e);
+  const s = slots[dragging];
+  s.dx = dragOrigin.dx + (pos.x - dragStart.x);
+  s.dy = dragOrigin.dy + (pos.y - dragStart.y);
+  clampSlot(dragging);
+  render();
+});
+
+function endDrag(){
+  dragging = null;
+  canvas.classList.remove('dragging');
+}
+canvas.addEventListener('pointerup', endDrag);
+canvas.addEventListener('pointerleave', endDrag);
+canvas.addEventListener('pointercancel', endDrag);
+
+downloadBtn.addEventListener('click', () => {
+  const link = document.createElement('a');
+  link.download = 'instagram-slide-' + Date.now() + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+});
+
+render();
+</script>
+
+</body>
+</html>
